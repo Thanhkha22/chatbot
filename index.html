@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hướng nghiệp & chọn ngành học</title>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     * { box-sizing: border-box; }
 
@@ -63,6 +63,7 @@
     .msg.bot { justify-content: flex-start; }
 
     .bubble {
+      white-space: pre-line;
       padding: 10px 14px;
       border-radius: 18px;
       max-width: 75%;
@@ -219,13 +220,312 @@
   transform: translateX(250px);
 }
 
+/* // */
+/* ===== Ô tìm kiếm trong sidebar ===== */
+.search-box {
+  margin: 15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8eaed;
+  border-radius: 20px;
+}
 
+.search-box input {
+  width: 100%;
+  padding: 0px 0px;
+  border: none;
+  
+  background: #e8eaed;
+  outline: none;
+  font-size: 14px;
+  color: #333;
+  transition: box-shadow 0.2s ease;
+}
+
+.search-box input:focus {
+  box-shadow: 0 0 6px rgba(255,255,255,0.6);
+}
+
+/* ===== Nút cuộc trò chuyện mới ===== */
+.new-chat-btn {
+  width: 100%;
+  background: white;
+  
+  border: none;
+  border-radius: 25px;
+  padding: 10px 0;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  
+}
+
+.new-chat-btn:hover {
+  background: white;
+  color: rgb(8, 8, 8);
+ box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+.span{
+  color: black;
+  font-weight: 600;
+}
+/* // */
+.chat-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f7ff;
+  margin: 6px 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+.chat-title {
+  flex: 1;
+  color: #222;
+  cursor: pointer;
+  font-size: 14px;
+}
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555;
+}
+.menu {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 32px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+.menu button {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.menu button:hover {
+  background: #0078ff;
+  color: white;
+}
+.chat-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f5f7ff;
+  margin: 6px 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+.chat-item:hover {
+  background: #e8efff;
+}
+.chat-title {
+  flex: 1;
+  color: #222;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+}
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #555;
+}
+.menu {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 32px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+.menu button {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.menu button:hover {
+  background: #0078ff;
+  color: white;
+}
+.pinned {
+  border-left: 3px solid #0078ff;
+  background: #eef4ff;
+}
+/* ===== DANH SÁCH CUỘC TRÒ CHUYỆN ===== */
+#chatList {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chat-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9ff;
+  border: 1px solid #e2e6f3;
+  border-radius: 10px;
+  padding: 10px 12px;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.chat-item:hover {
+  background: #eaf0ff;
+  box-shadow: 0 2px 6px rgba(0, 120, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.chat-title {
+  flex: 1;
+  color: #222;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chat-title strong {
+  font-weight: 600;
+  color: #0056d2;
+}
+
+.chat-title i.fa-thumbtack {
+  font-size: 13px;
+  color: #0078ff;
+  opacity: 0.9;
+}
+
+/* ===== NÚT ⋮ MENU ===== */
+.menu-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #666;
+  padding: 2px 6px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.menu-btn:hover {
+  background: rgba(0, 120, 255, 0.1);
+}
+
+/* ===== DROPDOWN MENU ===== */
+.menu {
+  display: none;
+  position: absolute;
+  right: 10px;
+  top: 40px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  z-index: 20;
+  min-width: 130px;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+}
+
+.menu button {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.menu button:hover {
+  background: #0078ff;
+  color: #fff;
+}
+
+/* ===== CHAT GHIM ===== */
+.chat-item.pinned {
+  border-left: 4px solid #0078ff;
+  background: #f0f6ff;
+}
+
+.chat-item.pinned:hover {
+  background: #e3edff;
+}
+
+/* ===== HIỆU ỨNG MỞ MENU ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.upload-btn {
+  background: #f0f2f5;
+  border-radius: 50%;
+  padding: 8px;
+  margin-right: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0078ff;
+  transition: all 0.2s ease;
+}
+
+.upload-btn:hover {
+  background: #e0e7ff;
+  transform: scale(1.05);
+}
 
   </style>
 </head>
 
 <body>
-  <div id="sidebarMenu" class="sidebar"></div>
+  <div id="sidebarMenu" class="sidebar">
+    <div class="search-box">
+      <i style="color: black; padding:8px" class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Tìm kiếm cuộc trò chuyện..." />
+    </div>
+
+
+    <!-- Nút tạo mới -->
+    <button type="text" class="new-chat-btn" onclick="newChat()"><i style="padding-right: 6px;" class="fa-solid fa-pen-to-square"> </i> Cuộc trò chuyện mới</button>
+    <span class="span">Gần đây</span>
+  </div>
   <div class="chat-container">
     <!-- ===== SIDEBAR MENU ===== -->
 
@@ -274,9 +574,19 @@
 
     <!-- ===== INPUT BOX ===== -->
     <div class="input-box">
-      <input id="input" type="text" placeholder="Nhập sở thích hoặc điểm mạnh của bạn..." />
-      <button onclick="sendMsg()">Gửi</button>
-    </div>
+  <!-- Nút tải file -->
+  <label for="fileUpload" class="upload-btn" title="Tải tệp lên">
+    <i class="fa-solid fa-paperclip"></i>
+  </label>
+  <input type="file" id="fileUpload" style="display:none" onchange="handleFile(event)" />
+
+  <!-- Ô nhập -->
+  <input id="input" type="text" placeholder="Nhập sở thích hoặc điểm mạnh của bạn..." onkeypress="handleKey(event)" />
+
+  <!-- Nút gửi -->
+  <button onclick="sendMsg()">Gửi</button>
+</div>
+
   </div>
 
   <!-- ===== SCRIPT AI CHAT ===== -->
@@ -293,10 +603,26 @@
             contents: [{
               parts: [{
                 text: `
-Phân tích sở thích hoặc điểm mạnh sau và gợi ý 3 ngành học phù hợp ở Việt Nam (ngắn gọn, dễ hiểu).
-Kèm theo: mô tả ngành, khối thi, trường tiêu biểu và hướng nghề nghiệp tương lai.
-Sở thích: ${prompt}
-                `
+Bạn là cố vấn hướng nghiệp Việt Nam.
+Hãy trả lời NGẮN GỌN, RÕ RÀNG, DỄ ĐỌC theo bố cục sau:
+
+📘 **Ngành 1:** [Tên ngành]
+- Mô tả: [Tóm tắt ngắn]
+- Khối thi: [Liệt kê ngắn]
+- Trường tiêu biểu: [Tên trường]
+- Hướng nghề nghiệp: [Ngắn gọn]
+
+📗 **Ngành 2:** [Tên ngành]
+...
+
+Nếu người dùng không nói rõ sở thích hoặc chỉ chào hỏi (như "hi", "hello", "chào"), hãy trả lời:
+"Chào bạn 👋! Hãy nói cho tôi biết sở thích hoặc điểm mạnh của bạn nhé."
+
+⚠️ Không viết văn dài dòng. Dùng emoji và xuống dòng hợp lý.
+
+Sở thích hoặc điểm mạnh: ${prompt}
+`
+
               }]
             }]
           })
@@ -306,14 +632,28 @@ Sở thích: ${prompt}
       return data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ Không có phản hồi từ AI.";
     }
 
-    async function typeText(container, text, delay = 20) {
-      container.innerHTML = "";
-      for (let i = 0; i < text.length; i++) {
-        container.innerHTML += text.charAt(i);
-        container.scrollIntoView({ behavior: "smooth", block: "end" });
-        await new Promise(r => setTimeout(r, delay));
-      }
+    async function typeText(container, text, delay = 10) {
+  container.innerHTML = "";
+  let temp = "";
+
+  for (let i = 0; i < text.length; i++) {
+    temp += text.charAt(i);
+
+    // Nếu là kết thúc một thẻ HTML hoặc ký tự xuống dòng, render ngay
+    if (text.charAt(i) === ">" || text.charAt(i) === "\n") {
+      container.innerHTML = temp;
+    } else {
+      container.innerHTML = temp;
     }
+
+    container.scrollIntoView({ behavior: "smooth", block: "end" });
+    await new Promise(r => setTimeout(r, delay));
+  }
+
+  // Sau khi gõ xong, hiển thị toàn bộ HTML thật
+  container.innerHTML = text;
+}
+
 
     async function sendMsg(message = null) {
       const input = document.getElementById("input");
@@ -333,14 +673,8 @@ Sở thích: ${prompt}
       // Bot đang suy nghĩ
       const botMsg = document.createElement("div");
       botMsg.className = "msg bot";
-      botMsg.innerHTML = `
-        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AI" />
-        <div class="bubble">
-          Vui lòng chờ trong giây lát
-          <span class="typing-dots">
-            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          </span>
-        </div>`;
+      botMsg.innerHTML = `<img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AI" /><div class="bubble typing-bubble">Vui lòng chờ trong giây lát <span class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>`;
+
       chat.appendChild(botMsg);
       chat.scrollTop = chat.scrollHeight;
 
@@ -349,7 +683,11 @@ Sở thích: ${prompt}
       try {
         const reply = await askGemini(msg);
         await new Promise(r => setTimeout(r, 400));
-        await typeText(bubble, reply, 18);
+        const cleanReply = reply
+          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\n/g, "<br>");
+        await typeText(bubble, cleanReply, 18);
+        
       } catch (e) {
         bubble.innerHTML = `⚠️ Lỗi: ${e.message}`;
       }
@@ -361,6 +699,13 @@ Sở thích: ${prompt}
       document.getElementById("input").value = text;
       sendMsg(text);
     }
+    function handleKey(e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMsg();
+      }
+    }
+
   </script>
 
   <!-- ===== GOOGLE LOGIN ===== -->
@@ -430,9 +775,132 @@ Sở thích: ${prompt}
       chatContainer.classList.remove("shifted");
     }
   });
-
-  
 </script>
+
+<script>
+let chatHistory = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+let currentChat = null;
+
+function renderChatList() {
+  const sidebar = document.getElementById("sidebarMenu");
+  let list = document.getElementById("chatList");
+  if (!list) {
+    list = document.createElement("div");
+    list.id = "chatList";
+    sidebar.appendChild(list);
+  }
+
+  list.innerHTML = chatHistory
+    .map((c, i) => `
+      <div class="chat-item ${c.pinned ? 'pinned' : ''}">
+        <span class="chat-title" onclick="loadChat(${i})">
+          ${c.pinned ? '<i class="fa-solid fa-thumbtack" style="color:#0078ff; margin-right:6px;"></i>' : ''}
+          ${c.pinned ? `<strong>${c.name}</strong>` : c.name}
+        </span>
+        <div class="dropdown">
+          <button class="menu-btn" onclick="toggleMenu(${i})">⋮</button>
+          <div class="menu" id="menu-${i}">
+            <button onclick="renameChat(${i})">Đổi tên</button>
+            <button onclick="pinChat(${i})">${c.pinned ? 'Bỏ ghim' : 'Ghim'}</button>
+            <button onclick="shareChat(${i})">Chia sẻ</button>
+            <button onclick="deleteChat(${i})">Xóa</button>
+          </div>
+        </div>
+      </div>
+    `)
+    .join("");
+}
+
+function saveCurrentChat() {
+  const chatBox = document.getElementById("chat");
+  if (!chatBox || chatBox.innerHTML.trim() === "") return;
+
+  const content = chatBox.innerHTML;
+  if (currentChat !== null) {
+    chatHistory[currentChat].content = content;
+  } else {
+    const firstMsg = chatBox.querySelector(".msg.user .bubble")?.innerText || "Cuộc trò chuyện mới";
+    chatHistory.unshift({ name: firstMsg.substring(0, 30), content, pinned: false });
+    currentChat = 0;
+  }
+
+  localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+  renderChatList();
+}
+
+function newChat() {
+  saveCurrentChat();
+
+  const chatBox = document.getElementById("chat");
+  chatBox.innerHTML = `
+    <div class="msg bot">
+      <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AI" />
+      <div class="bubble">Xin chào 👋 Tôi là cố vấn hướng nghiệp AI. Hãy nói cho tôi biết sở thích hoặc điểm mạnh của bạn nhé!</div>
+    </div>`;
+  currentChat = null;
+}
+
+function loadChat(index) {
+  const chatBox = document.getElementById("chat");
+  chatBox.innerHTML = chatHistory[index].content;
+  currentChat = index;
+}
+
+function deleteChat(index) {
+  chatHistory.splice(index, 1);
+  localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+  renderChatList();
+}
+
+function renameChat(index) {
+  const newName = prompt("Nhập tên mới:", chatHistory[index].name);
+  if (newName) {
+    chatHistory[index].name = newName;
+    localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+    renderChatList();
+  }
+}
+
+function pinChat(index) {
+  const chat = chatHistory[index];
+  chat.pinned = !chat.pinned; // Đổi trạng thái ghim
+
+  // Đưa ghim lên đầu, bỏ ghim thì giữ nguyên vị trí hiện tại
+  if (chat.pinned) {
+    chatHistory.splice(index, 1);
+    chatHistory.unshift(chat);
+  }
+
+  localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
+  renderChatList();
+}
+
+function shareChat(index) {
+  const text = chatHistory[index].content
+    .replace(/<[^>]+>/g, "") // bỏ thẻ HTML
+    .slice(0, 1000); // tránh quá dài
+  const encoded = encodeURIComponent(text);
+
+  // Mở cửa sổ chia sẻ Zalo
+  window.open(`https://zalo.me/share/text?text=${encoded}`, "_blank");
+}
+
+
+function toggleMenu(i) {
+  const currentMenu = document.getElementById(`menu-${i}`);
+  const isOpen = currentMenu.style.display === "block";
+
+  // Đóng tất cả menu khác
+  document.querySelectorAll(".menu").forEach(m => (m.style.display = "none"));
+
+  // Nếu menu đang mở thì tắt, nếu đang tắt thì mở
+  currentMenu.style.display = isOpen ? "none" : "block";
+}
+
+
+renderChatList();
+</script>
+
 
 </body>
 </html>
