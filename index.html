@@ -209,15 +209,26 @@
 .sidebar.active {
   left: 0;
 }
+.chat-container {
+  transition: transform 0.4s ease;
+  position: relative;
+  z-index: 5;
+}
+
+.chat-container.shifted {
+  transform: translateX(250px);
+}
+
 
 
   </style>
 </head>
 
 <body>
+  <div id="sidebarMenu" class="sidebar"></div>
   <div class="chat-container">
     <!-- ===== SIDEBAR MENU ===== -->
-<div id="sidebarMenu" class="sidebar"></div>
+
 
     <!-- ===== HEADER ===== -->
     <div class="chat-header">
