@@ -18,6 +18,7 @@
       height: 100vh;
     }
 
+    /* Khung chính */
     .chat-container {
       width: 90%;
       max-width: 450px;
@@ -30,6 +31,7 @@
       overflow: hidden;
     }
 
+    /* --- HEADER --- */
     .chat-header {
       display: flex;
       align-items: center;
@@ -41,6 +43,7 @@
       font-size: 17px;
     }
 
+    /* Chat box */
     .chat-box {
       flex: 1;
       padding: 15px;
@@ -49,6 +52,7 @@
       scroll-behavior: smooth;
     }
 
+    /* Tin nhắn */
     .msg {
       display: flex;
       margin-bottom: 12px;
@@ -85,6 +89,7 @@
       margin: 0 6px;
     }
 
+    /* Input box */
     .input-box {
       display: flex;
       border-top: 1px solid #ccc;
@@ -113,13 +118,16 @@
       font-weight: 500;
       transition: background 0.2s ease;
     }
+
     .input-box button:hover { background: #005ccc; }
 
+    /* Hiệu ứng gõ */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
+    /* Hiệu ứng 3 chấm */
     .typing-dots { display: inline-block; margin-left: 4px; }
     .dot {
       height: 8px;
@@ -138,6 +146,7 @@
       40% { opacity: 1; }
     }
 
+    /* Quick reply */
     .quick-reply {
       display: flex;
       flex-wrap: wrap;
@@ -172,20 +181,7 @@
       box-shadow: 0 4px 8px rgba(0,120,255,0.25);
     }
 
-    #logoutBtn {
-      background: #ff4b4b;
-      color: white;
-      border: none;
-      border-radius: 16px;
-      padding: 6px 10px;
-      margin-left: 10px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: 0.2s;
-      display: none;
-    }
-    #logoutBtn:hover { background: #e63939; }
-
+    /* Mobile */
     @media (max-width: 600px) {
       .chat-container { width: 100%; height: 100vh; border-radius: 0; }
       .bubble { max-width: 80%; }
@@ -197,33 +193,40 @@
 
 <body>
   <div class="chat-container">
+    <!-- ===== HEADER ===== -->
     <div class="chat-header">
-      <div id="menuIcon" style="cursor: pointer; font-size: 22px;">☰</div>
+      <!-- Menu icon -->
+      <div id="menuIcon" title="Tùy chọn" style="cursor: pointer; font-size: 22px;">☰</div>
 
-      <div style="flex: 1; text-align: center;">
+      <!-- Tiêu đề -->
+      <div style="flex: 1; text-align: center; text-transform: capitalize;">
         Hướng nghiệp & chọn ngành học
       </div>
 
-      <div id="googleSection" style="cursor: pointer; position: relative; display:flex; align-items:center;">
+      <!-- Avatar / Google login -->
+      <div id="googleSection" style="cursor: pointer; position: relative;">
         <div id="g_id_signin" style="display: none;"></div>
-        <img id="userAvatar"
+        <img
+          id="userAvatar"
           src="https://cdn-icons-png.flaticon.com/512/3001/3001764.png"
           alt="Đăng nhập"
           style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid white;"
-          title="Đăng nhập Google" />
-        <button id="logoutBtn" onclick="logoutGoogle()">Đăng xuất</button>
+          title="Đăng nhập Google"
+        />
       </div>
     </div>
 
+    <!-- ===== CHAT BOX ===== -->
     <div class="chat-box" id="chat">
       <div class="msg bot">
-        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
+        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AI" />
         <div class="bubble">
           Xin chào! 👋 Tôi là cố vấn hướng nghiệp AI. Hãy nói cho tôi biết sở thích hoặc điểm mạnh của bạn nhé!
         </div>
       </div>
     </div>
 
+    <!-- ===== QUICK REPLIES ===== -->
     <div class="quick-reply">
       <button onclick="sendQuick('Tôi thích vẽ và sáng tạo nghệ thuật')">Nghệ thuật</button>
       <button onclick="sendQuick('Tôi giỏi Toán, Lý và thích kỹ thuật')">Kỹ thuật</button>
@@ -231,13 +234,14 @@
       <button onclick="sendQuick('Tôi thích giao tiếp và kinh doanh')">Kinh tế</button>
     </div>
 
+    <!-- ===== INPUT BOX ===== -->
     <div class="input-box">
       <input id="input" type="text" placeholder="Nhập sở thích hoặc điểm mạnh của bạn..." />
       <button onclick="sendMsg()">Gửi</button>
     </div>
   </div>
 
-  <!-- ===== CHAT SCRIPT ===== -->
+  <!-- ===== SCRIPT AI CHAT ===== -->
   <script>
     const GEMINI_KEY = "AIzaSyC2HUulbDA-T05ahDvhm71zNZbY8oPPIPk";
 
@@ -250,9 +254,11 @@
           body: JSON.stringify({
             contents: [{
               parts: [{
-                text: `Phân tích sở thích hoặc điểm mạnh sau và gợi ý 3 ngành học phù hợp ở Việt Nam (ngắn gọn, dễ hiểu).
+                text: `
+Phân tích sở thích hoặc điểm mạnh sau và gợi ý 3 ngành học phù hợp ở Việt Nam (ngắn gọn, dễ hiểu).
 Kèm theo: mô tả ngành, khối thi, trường tiêu biểu và hướng nghề nghiệp tương lai.
-Sở thích: ${prompt}`
+Sở thích: ${prompt}
+                `
               }]
             }]
           })
@@ -278,19 +284,28 @@ Sở thích: ${prompt}`
       if (!msg) return;
       input.value = "";
 
+      // Người dùng
       chat.innerHTML += `
         <div class='msg user'>
           <div class='bubble'>${msg}</div>
-          <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" />
+          <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" />
         </div>`;
       chat.scrollTop = chat.scrollHeight;
 
+      // Bot đang suy nghĩ
       const botMsg = document.createElement("div");
       botMsg.className = "msg bot";
       botMsg.innerHTML = `
-        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
-        <div class="bubble">Vui lòng chờ trong giây lát<span class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>`;
+        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AI" />
+        <div class="bubble">
+          Vui lòng chờ trong giây lát
+          <span class="typing-dots">
+            <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          </span>
+        </div>`;
       chat.appendChild(botMsg);
+      chat.scrollTop = chat.scrollHeight;
+
       const bubble = botMsg.querySelector(".bubble");
 
       try {
@@ -300,6 +315,7 @@ Sở thích: ${prompt}`
       } catch (e) {
         bubble.innerHTML = `⚠️ Lỗi: ${e.message}`;
       }
+
       chat.scrollTop = chat.scrollHeight;
     }
 
@@ -309,7 +325,7 @@ Sở thích: ${prompt}`
     }
   </script>
 
-  <!-- ===== GOOGLE LOGIN SCRIPT ===== -->
+  <!-- ===== GOOGLE LOGIN ===== -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script>
     window.onload = function() {
@@ -324,44 +340,26 @@ Sở thích: ${prompt}`
       );
 
       document.getElementById("googleSection").addEventListener("click", () => {
-        if (document.getElementById("logoutBtn").style.display === "none") {
-          document.querySelector("#g_id_signin div[role=button]").click();
-        }
+        document.querySelector("#g_id_signin div[role=button]").click();
       });
     };
 
     function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
       const avatar = document.getElementById("userAvatar");
-      const logoutBtn = document.getElementById("logoutBtn");
 
-      avatar.src = data.picture || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
-      avatar.title = `${data.name} (${data.email})`;
-      logoutBtn.style.display = "inline-block";
+      if (data.picture) {
+        avatar.src = data.picture;
+        avatar.title = `${data.name} (${data.email})`;
+      } else {
+        avatar.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      }
 
       const chat = document.getElementById("chat");
       chat.innerHTML += `
         <div class='msg bot'>
           <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
           <div class='bubble'>Xin chào <b>${data.given_name || data.name}</b> 👋! Rất vui được đồng hành cùng bạn trong hành trình chọn ngành!</div>
-        </div>`;
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function logoutGoogle() {
-      google.accounts.id.disableAutoSelect();
-      const avatar = document.getElementById("userAvatar");
-      const logoutBtn = document.getElementById("logoutBtn");
-
-      avatar.src = "https://cdn-icons-png.flaticon.com/512/3001/3001764.png";
-      avatar.title = "Đăng nhập Google";
-      logoutBtn.style.display = "none";
-
-      const chat = document.getElementById("chat");
-      chat.innerHTML += `
-        <div class='msg bot'>
-          <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
-          <div class='bubble'>👋 Bạn đã đăng xuất khỏi tài khoản Google thành công!</div>
         </div>`;
       chat.scrollTop = chat.scrollHeight;
     }
