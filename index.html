@@ -1037,37 +1037,47 @@ document.getElementById("sidebarMenu").addEventListener("click", (e) => {
 });
 </script>
 <!-- ép buộc login khi chưa đăng nhập  -->
- <script>
+<script>
   let userData = JSON.parse(localStorage.getItem("userData") || "null");
 
-  // Khởi tạo Google Sign-In
-  window.onload = function() {
+  // 🧠 Khởi tạo Google Sign-In
+  window.onload = function () {
     google.accounts.id.initialize({
       client_id: "651931498757-b81tibe02fm08puv5tacju8qs97dnqrt.apps.googleusercontent.com",
       callback: handleCredentialResponse,
       auto_select: true
     });
 
-    // Khởi tạo nút Google nhưng ẩn
+    // Tạo nút Google Sign-In (ẩn đi)
     google.accounts.id.renderButton(
       document.getElementById("g_id_signin"),
       { theme: "outline", size: "large" }
     );
 
-    // Nếu có userData từ lần trước thì áp dụng luôn
+    // Nếu đã đăng nhập trước đó -> hiển thị avatar luôn
     if (userData) applyUserData(userData);
   };
 
-  // Khi người dùng nhấn vào ô nhập chat
+  // 🟦 Khi người dùng nhấn vào ô nhập chat
   const chatInput = document.getElementById("input");
   chatInput.addEventListener("focus", () => {
     if (!userData) {
-      // Chưa đăng nhập -> bật popup đăng nhập Google
+      // Chưa đăng nhập -> mở popup Google Sign-In
       document.querySelector("#g_id_signin div[role=button]").click();
     }
   });
 
-  // Khi Google trả về token
+  // 🟩 Khi người dùng nhấn vào avatar Google (icon tròn)
+  const googleSection = document.getElementById("googleSection");
+  googleSection.addEventListener("click", () => {
+    if (!userData) {
+      document.querySelector("#g_id_signin div[role=button]").click();
+    } else {
+      alert(`Bạn đã đăng nhập là ${userData.name}`);
+    }
+  });
+
+  // 🧩 Xử lý phản hồi sau khi đăng nhập
   function handleCredentialResponse(response) {
     const data = parseJwt(response.credential);
     userData = data;
@@ -1075,7 +1085,7 @@ document.getElementById("sidebarMenu").addEventListener("click", (e) => {
     applyUserData(data);
   }
 
-  // Áp dụng avatar & lời chào
+  // 🎨 Cập nhật giao diện sau khi đăng nhập
   function applyUserData(data) {
     const avatar = document.getElementById("userAvatar");
     avatar.src = data.picture || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
@@ -1085,20 +1095,24 @@ document.getElementById("sidebarMenu").addEventListener("click", (e) => {
     chat.innerHTML += `
       <div class='msg bot'>
         <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
-        <div class='bubble'>Xin chào <b>${data.given_name || data.name}</b> 👋! Bây giờ bạn có thể trò chuyện cùng mình nhé!</div>
+        <div class='bubble'>Xin chào <b>${data.given_name || data.name}</b> 👋! Bạn có thể bắt đầu trò chuyện cùng mình rồi nhé!</div>
       </div>`;
   }
 
-  // Giải mã JWT
+  // 🔐 Giải mã JWT trả về từ Google
   function parseJwt(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''));
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
     return JSON.parse(jsonPayload);
   }
 </script>
+
 
 
 </body>
