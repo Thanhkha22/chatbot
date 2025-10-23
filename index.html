@@ -559,6 +559,16 @@ html, body {
   background: #e0e7ff;
   transform: scale(1.05);
 }
+#logoutDropdown {
+  animation: fadeIn 0.2s ease;
+}
+
+#logoutDropdown button:hover {
+  background: #0078ff;
+  color: white;
+  border-radius: 8px;
+}
+
   </style>
 </head>
 
@@ -590,16 +600,29 @@ html, body {
 
       <!-- Avatar / Google login -->
       <div id="googleSection" style="cursor: pointer; position: relative;">
-        <div id="g_id_signin" style="display: none;"></div>
-        <img
-          id="userAvatar"
-          src="https://cdn-icons-png.flaticon.com/512/3001/3001764.png"
-          alt="Đăng nhập"
-          style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid white;"
-          title="Đăng nhập Google"
-        />
+      <div id="g_id_signin" style="display: none;"></div>
+      <img
+        id="userAvatar"
+        src="https://cdn-icons-png.flaticon.com/512/3001/3001764.png"
+        alt="Đăng nhập"
+        style="width: 32px; height: 32px; border-radius: 50%; border: 2px solid white;"
+        title="Đăng nhập Google"
+      />
+
+      <!-- Dropdown đăng xuất -->
+      <div id="logoutDropdown" 
+          style="display: none; position: absolute; right: 0; top: 42px; 
+                  background: #fff; border: 1px solid #ddd; border-radius: 8px;
+                  box-shadow: 0 2px 10px rgba(0,0,0,0.15); min-width: 140px; z-index: 2000;">
+        <button id="logoutBtn" 
+                style="width: 100%; border: none; background: none; 
+                      padding: 10px; text-align: left; cursor: pointer; 
+                      font-size: 14px; color: #333;">
+          <i class="fa-solid fa-right-from-bracket" style="margin-right:6px;"></i> Đăng xuất
+        </button>
       </div>
     </div>
+  </div>
 
     <!-- ===== CHAT BOX ===== -->
     <div class="chat-box" id="chat">
@@ -1068,14 +1091,46 @@ document.getElementById("sidebarMenu").addEventListener("click", (e) => {
   });
 
   // 🟩 Khi người dùng nhấn vào avatar Google (icon tròn)
-  const googleSection = document.getElementById("googleSection");
-  googleSection.addEventListener("click", () => {
-    if (!userData) {
-      document.querySelector("#g_id_signin div[role=button]").click();
-    } else {
-      alert(`Bạn đã đăng nhập là ${userData.name}`);
-    }
-  });
+  // 🟩 Khi người dùng nhấn vào avatar Google (icon tròn)
+const googleSection = document.getElementById("googleSection");
+const logoutDropdown = document.getElementById("logoutDropdown");
+const logoutBtn = document.getElementById("logoutBtn");
+
+googleSection.addEventListener("click", (e) => {
+  e.stopPropagation(); // tránh bị đóng bởi document click
+  if (!userData) {
+    // Chưa đăng nhập → mở Google Sign-In
+    document.querySelector("#g_id_signin div[role=button]").click();
+  } else {
+    // Đã đăng nhập → hiển thị dropdown đăng xuất
+    logoutDropdown.style.display =
+      logoutDropdown.style.display === "block" ? "none" : "block";
+  }
+});
+
+// 🟧 Khi click ra ngoài dropdown → ẩn đi
+document.addEventListener("click", () => {
+  logoutDropdown.style.display = "none";
+});
+
+// 🟥 Xử lý nút đăng xuất
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("userData");
+  userData = null;
+  const avatar = document.getElementById("userAvatar");
+  avatar.src = "https://cdn-icons-png.flaticon.com/512/3001/3001764.png";
+  avatar.title = "Đăng nhập Google";
+  logoutDropdown.style.display = "none";
+
+  const chat = document.getElementById("chat");
+  chat.innerHTML += `
+    <div class='msg bot'>
+      <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
+      <div class='bubble'>Bạn đã đăng xuất khỏi tài khoản Google 👋</div>
+    </div>`;
+  chat.scrollTop = chat.scrollHeight;
+});
+
 
   // 🧩 Xử lý phản hồi sau khi đăng nhập
   function handleCredentialResponse(response) {
