@@ -767,9 +767,9 @@ async function typeText(container, text, delay = 10) {
     container.innerHTML = temp;
 
     // Chỉ cuộn nếu người dùng đang ở gần cuối
-    if (isUserAtBottom(chatBox)) {
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    // if (isUserAtBottom(chatBox)) {
+    //   chatBox.scrollTop = chatBox.scrollHeight;
+    // }
 
     await new Promise(r => setTimeout(r, delay));
   }
@@ -778,9 +778,9 @@ async function typeText(container, text, delay = 10) {
   container.innerHTML = text;
 
   // Nếu người dùng ở cuối thì mới tự cuộn đến cuối
-  if (isUserAtBottom(chatBox)) {
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
+  // if (isUserAtBottom(chatBox)) {
+  //   chatBox.scrollTop = chatBox.scrollHeight;
+  // }
 }
 
 // ✅ Gửi tin nhắn — tự cuộn thông minh
@@ -799,9 +799,9 @@ async function sendMsg(message = null) {
     </div>`;
 
   // Chỉ cuộn nếu người dùng đang ở cuối
-  if (isUserAtBottom(chat)) {
-    chat.scrollTop = chat.scrollHeight;
-  }
+  // if (isUserAtBottom(chat)) {
+  //   chat.scrollTop = chat.scrollHeight;
+  // }
 
   // Bot đang suy nghĩ
   const botMsg = document.createElement("div");
@@ -813,9 +813,9 @@ async function sendMsg(message = null) {
   chat.appendChild(botMsg);
 
   // Cuộn chỉ khi ở cuối
-  if (isUserAtBottom(chat)) {
-    chat.scrollTop = chat.scrollHeight;
-  }
+  // if (isUserAtBottom(chat)) {
+  //   chat.scrollTop = chat.scrollHeight;
+  // }
 
   const bubble = botMsg.querySelector(".bubble");
 
