@@ -636,18 +636,46 @@ html, body {
 
   <!-- ===== SCRIPT AI CHAT ===== -->
   <script>
-    const GEMINI_KEY = "AIzaSyC2HUulbDA-T05ahDvhm71zNZbY8oPPIPk";
+// ==== 🔍 AI có Web Search + Memory ====
+// ⚠️ Cần tạo Custom Search Engine miễn phí tại: https://programmablesearchengine.google.com/
+// Và bật API key ở https://console.cloud.google.com/apis/credentials
+
+const GEMINI_KEY = "AIzaSyC2HUulbDA-T05ahDvhm71zNZbY8oPPIPk"; // key Gemini bạn đang dùng
+const GOOGLE_SEARCH_KEY = "AIzaSyD3L08IJxmwX54O0urJEvYwNdAza7yxs9g"; // key Custom Search API bạn vừa tạo
+const SEARCH_ENGINE_ID = "0583a958e662d4d20"; // mã CX bạn vừa tạo trên Programmable Search Engine
+
+// 🧠 Bộ nhớ hội thoại (giữ 5 lượt gần nhất)
+let conversationMemory = JSON.parse(localStorage.getItem("chatMemory") || "[]");
 
 async function askGemini(prompt) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: `
+  // 1️⃣ Tìm thông tin thật trên Google
+  let searchContext = "";
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/customsearch/v1?key=${GOOGLE_SEARCH_KEY}&cx=${SEARCH_ENGINE_ID}&q=${encodeURIComponent(prompt)}`
+    );
+    const data = await res.json();
+
+    if (data.items && data.items.length > 0) {
+      searchContext = data.items
+        .slice(0, 3)
+        .map(
+          (item, i) =>
+            `${i + 1}. ${item.title}\n${item.snippet}\n(${item.link})`
+        )
+        .join("\n\n");
+    }
+  } catch (err) {
+    console.warn("⚠️ Không thể truy xuất Google Search:", err);
+  }
+
+  // 2️⃣ Gộp trí nhớ hội thoại gần nhất
+  const lastMessages = conversationMemory.slice(-5)
+    .map(m => `${m.role === "user" ? "Người dùng" : "AI"}: ${m.text}`)
+    .join("\n");
+
+  // 3️⃣ Tạo prompt gửi sang Gemini (giữ nguyên phong cách hướng nghiệp của bạn)
+  const fullPrompt = `
 Bạn là một AI thân thiện và am hiểu giáo dục Việt Nam, đóng vai trò cố vấn hướng nghiệp cho học sinh cấp 3.
 Hãy trò chuyện ngắn gọn, thân thiện và trình bày **bố cục đẹp, dễ đọc**, có thể dùng emoji và xuống dòng hợp lý.
 Luôn gợi ý 2–3 ngành học hoặc hướng đi phù hợp (nếu có liên quan), kèm mô tả ngắn gọn và gợi ý trường tiêu biểu nếu hợp lý.
@@ -665,19 +693,39 @@ Cấu trúc gợi ý (nếu phù hợp):
 
 Nếu người dùng hỏi ngoài chủ đề học tập, vẫn phản hồi tự nhiên, lịch sự và hữu ích, không gò bó theo mẫu.
 
+-----------------------------
+🧠 **Ngữ cảnh hội thoại trước đó:**
+${lastMessages || "(chưa có hội thoại trước đó)"}
+
+🌐 **Thông tin tham khảo từ Google:**
+${searchContext || "Không tìm thấy thông tin trên web."}
+
 Người dùng nói: ${prompt}
-`
+`;
 
-
-
-          }]
-        }]
-      })
+  // 4️⃣ Gửi sang Gemini 2.5 Flash
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: fullPrompt }] }],
+      }),
     }
   );
 
   const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ Không có phản hồi từ AI.";
+  const reply =
+    data.candidates?.[0]?.content?.parts?.[0]?.text ||
+    "⚠️ Không có phản hồi từ AI.";
+
+  // 5️⃣ Cập nhật trí nhớ hội thoại
+  conversationMemory.push({ role: "user", text: prompt });
+  conversationMemory.push({ role: "ai", text: reply });
+  localStorage.setItem("chatMemory", JSON.stringify(conversationMemory.slice(-10)));
+
+  return reply;
 }
 
 // ✅ Kiểm tra xem người dùng có đang ở cuối khung chat không
@@ -989,7 +1037,7 @@ document.getElementById("sidebarMenu").addEventListener("click", (e) => {
 });
 </script>
 <!-- ép buộc login khi chưa đăng nhập  -->
- <!-- <script>
+ <script>
   let userData = JSON.parse(localStorage.getItem("userData") || "null");
 
   // Khởi tạo Google Sign-In
@@ -1050,7 +1098,7 @@ document.getElementById("sidebarMenu").addEventListener("click", (e) => {
     ).join(''));
     return JSON.parse(jsonPayload);
   }
-</script> -->
+</script>
 
 
 </body>
