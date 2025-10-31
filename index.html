@@ -8,9 +8,11 @@
 <!-- Google login -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<link rel="stylesheet" href="./assets/style.css">
-<script src="./assets/config.js"></script>
-<script src="./assets/app.js"></script>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/config.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/MBTI.js"></script>
+
 </head>
 
 <body>
@@ -23,6 +25,8 @@
 
     
     <button type="text" class="new-chat-btn" onclick="newChat()"><i style="padding-right: 6px;" class="fa-solid fa-pen-to-square"> </i> Cuộc trò chuyện mới</button>
+    <button class="start-btn" onclick="startMBTIQuiz()">Trắc nghiệm MBTI</button>
+    <br>
     <span class="span">Gần đây</span>
   </div>
   <div class="chat-container">
@@ -76,6 +80,7 @@
 
     <!-- ===== QUICK REPLIES ===== -->
     <div class="quick-reply">
+      
       <button onclick="sendQuick('Tôi thích vẽ và sáng tạo nghệ thuật')">Nghệ thuật</button>
       <button onclick="sendQuick('Tôi giỏi Toán, Lý và thích kỹ thuật')">Kỹ thuật</button>
       <button onclick="sendQuick('Tôi thích chăm sóc và giúp đỡ người khác')">Y dược</button>
@@ -688,6 +693,3 @@ searchInput.addEventListener('input', function () {
 
 </body>
 </html>
-
-
-
