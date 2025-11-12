@@ -403,6 +403,21 @@ async function sendMsg(message = null) {
         document.querySelector("#g_id_signin div[role=button]").click();
       });
     };
+    // 🔹 Khôi phục đăng nhập nếu có sẵn
+    const savedUser = JSON.parse(localStorage.getItem("googleUser") || "null");
+    if (savedUser) {
+      const avatar = document.getElementById("userAvatar");
+      avatar.src = savedUser.picture || "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      avatar.title = `${savedUser.name} (${savedUser.email})`;
+    }
+    // 🔹 Xử lý đăng xuất
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      localStorage.removeItem("googleUser"); // Xóa thông tin đăng nhập
+      google.accounts.id.disableAutoSelect(); // Hủy đăng nhập tự động Google
+      location.reload(); // Làm mới lại giao diện
+    });
+
+
 
     function handleCredentialResponse(response) {
       const data = parseJwt(response.credential);
@@ -422,6 +437,8 @@ async function sendMsg(message = null) {
           <div class='bubble'>Xin chào <b>${data.given_name || data.name}</b> 👋! Rất vui được đồng hành cùng bạn trong hành trình chọn ngành!</div>
         </div>`;
       chat.scrollTop = chat.scrollHeight;
+
+      localStorage.setItem("googleUser", JSON.stringify(data));
     }
 
     function parseJwt(token) {
