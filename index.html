@@ -399,9 +399,28 @@ async function sendMsg(message = null) {
         { theme: "outline", size: "large" }
       );
 
-      document.getElementById("googleSection").addEventListener("click", () => {
-        document.querySelector("#g_id_signin div[role=button]").click();
+      document.getElementById("googleSection").addEventListener("click", (e) => {
+        e.stopPropagation(); // tránh xung đột click ngoài
+        
+        const savedUser = JSON.parse(localStorage.getItem("googleUser") || "null");
+        const dropdown = document.getElementById("logoutDropdown");
+        
+        if (savedUser) {
+          // Đã đăng nhập → toggle menu đăng xuất
+          dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+        } else {
+          // Chưa đăng nhập → mở Google Sign-In
+          document.querySelector("#g_id_signin div[role=button]").click();
+        }
       });
+      
+      // Ẩn menu khi click ra ngoài
+      document.addEventListener("click", (e) => {
+        const dropdown = document.getElementById("logoutDropdown");
+        const googleSec = document.getElementById("googleSection");
+        if (!googleSec.contains(e.target)) dropdown.style.display = "none";
+      });
+
     };
     // 🔹 Khôi phục đăng nhập nếu có sẵn
     const savedUser = JSON.parse(localStorage.getItem("googleUser") || "null");
@@ -710,4 +729,5 @@ searchInput.addEventListener('input', function () {
 
 </body>
 </html>
+
 
