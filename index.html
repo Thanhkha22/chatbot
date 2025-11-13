@@ -62,7 +62,7 @@
         <button id="logoutBtn" 
                 style="width: 100%; border: none; background: none; 
                       padding: 10px; text-align: left; cursor: pointer; 
-                      font-size: 14px; color: red;">
+                      font-size: 14px; color: #333;">
           <i class="fa-solid fa-right-from-bracket" style="margin-right:6px;"></i> Đăng xuất
         </button>
       </div>
@@ -110,6 +110,7 @@
     <label for="fileUpload" class="upload-btn" title="Tải tệp lên" style="cursor:pointer;">
       <i class="fa-solid fa-paperclip"></i>
     </label>
+    <div id="imagePreviewContainer" class="flex items-end gap-2"></div>
     <input type="file" id="fileUpload" style="display:none" onchange="handleFile(event)" />
 
     <!-- Ô nhập nội dung -->
@@ -170,8 +171,14 @@ async function askGemini(prompt, imageData = null) {
     .join("\n");
 
   const fullPrompt = `
-Bạn là một AI thân thiện và am hiểu giáo dục Việt Nam, đóng vai trò cố vấn hướng nghiệp cho học sinh cấp 3.
-Bạn có thể hiểu và phân tích hình ảnh hoặc văn bản mà người dùng tải lên (nếu có).
+Bạn là một AI thân thiện, có khả năng nhận diện hình ảnh, vật thể, nhân vật, biểu tượng hoặc tựa game trong ảnh người dùng gửi.
+Khi người dùng gửi ảnh, hãy mô tả nội dung bức ảnh thật cụ thể và nếu có thể, hãy nhận diện:
+- Tên trò chơi, nhân vật, bối cảnh hoặc logo xuất hiện.
+- Loại game (ví dụ: MOBA, FPS, RPG, v.v.)
+- Cảm nhận tổng quan (ví dụ: cổ điển, hiện đại, anime, 3D, pixel-art,...)
+
+Nếu không chắc chắn, hãy nêu các khả năng có thể đúng nhất.  
+Sau đó, liên hệ đến kỹ năng, tính cách hoặc nghề nghiệp tương ứng nếu có thể.  
 
 🎯 Khi người dùng gửi ảnh:
 - Hãy mô tả nội dung bức ảnh.
@@ -263,34 +270,54 @@ async function typeText(container, text, delay = 10) {
 async function sendMsg(message = null) {
   const input = document.getElementById("input");
   const chat = document.getElementById("chat");
-  const msg = message || input.value.trim();
-  if (!msg) return;
-  input.value = "";
+  const text = message || input.value.trim();
+
+  if (!text && !uploadedImageBase64) return;
+
+  // --- 1️⃣ Thêm message user vào chat ---
+  let bubbleContent = "";
+  if (uploadedImageBase64) {
+    bubbleContent += `<img src="${uploadedImageBase64}" style="max-width:100%; border-radius:8px; margin-bottom:6px;">`;
+  }
+  if (text) {
+    bubbleContent += `<span>${text}</span>`;
+  }
 
   chat.innerHTML += `
-    <div class='msg user'>
-      <div class='bubble'>${msg}</div>
+    <div class="msg user">
+      <div class="bubble" style="display:flex; flex-direction:column; align-items:flex-start; gap:4px;">
+        ${bubbleContent}
+      </div>
       <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" />
-    </div>`;
+    </div>
+  `;
 
+
+  chat.scrollTop = chat.scrollHeight;
+
+  // --- 2️⃣ Clear ngay input và ảnh ---
+  input.value = "";
+  document.getElementById("imagePreviewContainer").innerHTML = "";
+  const sentImage = uploadedImageBase64; // giữ tạm ảnh để gửi
+  uploadedImageBase64 = null;
+
+  // --- 3️⃣ Thêm message bot “đang phân tích” ---
   const botMsg = document.createElement("div");
   botMsg.className = "msg bot";
   botMsg.innerHTML = `
     <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="AI" />
     <div class="bubble typing-bubble">Vui lòng chờ trong giây lát<span class="typing-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span></div>`;
   chat.appendChild(botMsg);
-
+  
   const bubble = botMsg.querySelector(".bubble");
 
   try {
-    const reply = await askGemini(msg);
+    // --- 4️⃣ Gửi dữ liệu cho bot ---
+    const reply = await askGemini(text || "(chỉ ảnh)", sentImage);
     const cleanReply = reply.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
     await typeText(bubble, cleanReply, 18);
-
-    saveCurrentChat();
-
   } catch (e) {
-    bubble.innerHTML = `⚠️ Lỗi: ${e.message}`;
+    bubble.innerHTML = "⚠️ Lỗi: " + e.message;
   }
 
   chat.scrollTop = chat.scrollHeight;
@@ -298,74 +325,93 @@ async function sendMsg(message = null) {
 
 
 
-    async function handleFile(event) {
+let uploadedImageBase64 = null; // lưu ảnh upload tạm thời
+document.getElementById("imagePreviewContainer").innerHTML = "";
+input.value = "";
+
+async function handleFile(event) {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Cập nhật tên file vào ô hiển thị nhỏ (phía trên input)
-  const fileDisplay = document.getElementById("fileDisplay");
-  fileDisplay.value = file.name;
-  fileDisplay.title = file.name;
-
-  const chat = document.getElementById("chat");
-
-  // Nếu là ảnh → chỉ hiển thị ảnh, KHÔNG hiện dòng "📂 Tệp đã chọn"
   if (file.type.startsWith("image/")) {
     const reader = new FileReader();
-    reader.onload = async (e) => {
-      const base64 = e.target.result;
+    reader.onload = (e) => {
+      uploadedImageBase64 = e.target.result;
 
-      // 🖼️ Hiển thị ảnh preview trong chat
-      chat.innerHTML += `
-        <div class='msg user'>
-          <div class='bubble'>
-            <img src="${base64}" style="max-width:220px; border-radius:10px; margin-top:6px;">
-          </div>
-          <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" />
-        </div>`;
-      chat.scrollTop = chat.scrollHeight;
-
-      // 🤖 Thêm tin nhắn đang xử lý
-      const botMsg = document.createElement("div");
-      botMsg.className = "msg bot";
-      botMsg.innerHTML = `
-        <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
-        <div class="bubble typing-bubble">🧠 Đang phân tích hình ảnh...</div>`;
-      chat.appendChild(botMsg);
-      const bubble = botMsg.querySelector(".bubble");
-
-      try {
-        // Gửi ảnh cho Gemini đọc và mô tả
-        const reply = await askGemini("Hãy mô tả và phân tích hình ảnh này.", base64);
-        const cleanReply = reply
-          .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-          .replace(/\n/g, "<br>");
-        await typeText(bubble, cleanReply, 18);
-      } catch (e) {
-        bubble.innerHTML = "⚠️ Lỗi: " + e.message;
-      }
-
-      chat.scrollTop = chat.scrollHeight;
+      const previewContainer = document.getElementById("imagePreviewContainer");
+      previewContainer.innerHTML = "";
+      const imgEl = document.createElement("img");
+      imgEl.src = uploadedImageBase64;
+      imgEl.style.width = "40px";
+      imgEl.style.height = "40px";
+      imgEl.style.borderRadius = "5px";
+      previewContainer.appendChild(imgEl);
     };
     reader.readAsDataURL(file);
-  } else if (file.type.startsWith("text/")) {
-    // Nếu là file text → đọc nội dung
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const text = reader.result.slice(0, 5000);
-      const reply = await askGemini(`Hãy tóm tắt nội dung của file:\n\n${text}`);
-      chat.innerHTML += `
-        <div class='msg bot'>
-          <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
-          <div class='bubble'>${reply.replace(/\n/g, "<br>")}</div>
-        </div>`;
-    };
-    reader.readAsText(file, "utf-8");
   }
 
-  // Reset input file sau khi xử lý
   document.getElementById("fileUpload").value = "";
 }
+
+async function handleKey(event) {
+  if (event.key !== "Enter") return;
+
+  const input = document.getElementById("input");
+  const chat = document.getElementById("chat");
+  const text = input.value.trim();
+
+  if (!text && !uploadedImageBase64) return;
+
+  // Tạo nội dung bubble user
+  let bubbleContent = "";
+  if (uploadedImageBase64) {
+  bubbleContent += `<img src="${uploadedImageBase64}" style="width:150px;height:auto;border-radius:8px; margin-right:6px;">`;
+}
+
+  if (text) {
+    bubbleContent += `<span>${text}</span>`;
+  }
+
+  // Thêm message user vào chat
+  chat.innerHTML += `
+    <div class="msg user">
+      <div class="bubble" style="display:flex; align-items:center; gap:6px;">
+        ${bubbleContent}
+      </div>
+      <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" />
+    </div>
+  `;
+  chat.scrollTop = chat.scrollHeight;
+
+  // Nếu có ảnh, gửi ảnh + nội dung cho bot
+  if (uploadedImageBase64) {
+    const botMsg = document.createElement("div");
+    botMsg.className = "msg bot";
+    botMsg.innerHTML = `
+      <img class="avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" />
+      <div class="bubble typing-bubble">🧠 Đang phân tích hình ảnh và nội dung...</div>
+    `;
+    chat.appendChild(botMsg);
+    const bubble = botMsg.querySelector(".bubble");
+
+    try {
+      const reply = await askGemini(
+        `Hãy mô tả và phân tích hình ảnh này cùng nội dung sau: "${text}"`,
+        uploadedImageBase64
+      );
+      const cleanReply = reply.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>");
+      await typeText(bubble, cleanReply, 18);
+    } catch (err) {
+      bubble.innerHTML = "⚠️ Lỗi: " + err.message;
+    }
+
+    uploadedImageBase64 = null; // reset ảnh sau khi gửi
+    document.getElementById("imagePreviewContainer").innerHTML = ""; // xóa thumbnail
+  }
+
+  input.value = "";
+}
+
 
 
 
@@ -375,12 +421,7 @@ async function sendMsg(message = null) {
       document.getElementById("input").value = text;
       sendMsg(text);
     }
-    function handleKey(e) {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        sendMsg();
-      }
-    }
+    
     function isUserAtBottom(chatBox) {
       return chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 50;
     }
@@ -539,30 +580,6 @@ function saveCurrentChat() {
   renderChatList();
 }
 
-function saveCurrentChat() {
-  const chatBox = document.getElementById("chat");
-  if (!chatBox || chatBox.innerHTML.trim() === "") return;
-
-  const content = chatBox.innerHTML;
-  if (currentChat !== null) {
-    chatHistory[currentChat].content = content;
-    chatHistory[currentChat].time = new Date().toLocaleString();
-  } else {
-    const firstMsg = chatBox.querySelector(".msg.user .bubble")?.innerText || "Cuộc trò chuyện mới";
-    chatHistory.unshift({
-      name: firstMsg.substring(0, 30),
-      content,
-      time: new Date().toLocaleString(),
-      pinned: false
-    });
-    currentChat = 0;
-  }
-
-  if (chatHistory.length > 20) chatHistory.pop();
-
-  localStorage.setItem("chatHistory", JSON.stringify(chatHistory));
-  renderChatList();
-}
 
 
 function newChat() {
@@ -720,17 +737,6 @@ searchInput.addEventListener('input', function () {
 });
 </script>
 
-
-
-
-
-
-
-
 </body>
 </html>
-
-
-
-
 
